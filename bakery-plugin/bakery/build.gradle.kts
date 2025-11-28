@@ -58,6 +58,7 @@ gradlePlugin {
             implementationClass = "${libs.plugins.bakery.get().pluginId}.BakeryPlugin"
             displayName = "Bakery Plugin"
             description = "Gradle plugin for static site generation."
+            tags.set(listOf("jbake", "static-site-generator", "blog", "jgit", "asciidoc","markdown","thymeleaf"))
         }
     }
     website = "https://cheroliv.com"
