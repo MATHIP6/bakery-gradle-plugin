@@ -2,6 +2,7 @@
 :toc: left
 :toclevels: 3
 :source-highlighter: rouge
+:bakery-version: "0.0.2"
 
 link:README.adoc[English Version]
 
@@ -88,12 +89,14 @@ pluginManagement {
 
 Maintenant, appliquez le plugin dans votre `build.gradle.kts` et pointez-le vers votre fichier de configuration YAML.
 
+reporter la version_actuel dans le build script gradle: {bakery-version}
+
 .build.gradle.kts
 [source,kotlin]
 ----
 plugins {
     // Appliquer le plugin
-    id("com.cheroliv.bakery") version "0.0.2"
+    id("com.cheroliv.bakery") version version_actuel
 }
 
 // Configurer le chemin vers votre fichier de paramètres YAML
