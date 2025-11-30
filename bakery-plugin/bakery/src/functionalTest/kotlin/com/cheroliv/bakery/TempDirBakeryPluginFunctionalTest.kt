@@ -463,7 +463,7 @@ Group
 
 
         private val buildScriptListOfStringContained = listOf(
-            """id("com.cheroliv.bakery") version "0.0.1"""".trimIndent(),
+            """alias(libs.plugins.bakery)""".trimIndent(),
             """bakery { configPath = file("site.yml").absolutePath }""".trimIndent(),
         )
         private val settingsListOfStringContained = listOf(
