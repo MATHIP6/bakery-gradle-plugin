@@ -83,8 +83,13 @@ class BakeryPlugin : Plugin<Project> {
                         if (uiBuildDir.exists()) uiBuildDir.deleteRecursively()
                         if (!uiBuildDir.exists()) uiBuildDir.mkdirs()
                         if (!uiBuildDir.isDirectory) throw IllegalStateException("$uiBuildDir should be directory")
-//                        uiDir.absolutePath.run(::println)
-//                        uiBuildDir.run(::println)
+                        uiDir.absolutePath
+                            .apply(project.logger::info)
+                            .run(::println)
+                        uiBuildDir
+                            .path
+                            .apply(project.logger::info)
+                            .run(::println)
                         uiDir.copyRecursively(uiBuildDir, true)
                     }
                     doLast {
