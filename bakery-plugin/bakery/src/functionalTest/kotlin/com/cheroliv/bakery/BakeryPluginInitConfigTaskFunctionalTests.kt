@@ -2,12 +2,16 @@
 
 package com.cheroliv.bakery
 
-import com.cheroliv.bakery.BakeryPluginFunctionalTests.Companion.buildScriptListOfStringContained
-import com.cheroliv.bakery.BakeryPluginFunctionalTests.Companion.configListOfStringContained
-import com.cheroliv.bakery.BakeryPluginFunctionalTests.Companion.settingsListOfStringContained
-import com.cheroliv.bakery.BakeryPluginFunctionalTests.Companion.tomlListOfStringContained
-import com.cheroliv.bakery.Deps.BAKERY_GROUP
-import com.cheroliv.bakery.Deps.SITE_YML
+
+import com.cheroliv.bakery.FuncTestsConstants.BAKERY_GROUP
+import com.cheroliv.bakery.FuncTestsConstants.BUILD_FILE
+import com.cheroliv.bakery.FuncTestsConstants.CONFIG_FILE
+import com.cheroliv.bakery.FuncTestsConstants.LIBS_FILE
+import com.cheroliv.bakery.FuncTestsConstants.SETTINGS_FILE
+import com.cheroliv.bakery.FuncTestsConstants.buildScriptListOfStringContained
+import com.cheroliv.bakery.FuncTestsConstants.configListOfStringContained
+import com.cheroliv.bakery.FuncTestsConstants.settingsListOfStringContained
+import com.cheroliv.bakery.FuncTestsConstants.tomlListOfStringContained
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner.create
 import org.gradle.testkit.runner.UnexpectedBuildFailure
@@ -19,7 +23,6 @@ import java.io.File
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.text.Charsets.UTF_8
-
 
 
 class BakeryPluginInitConfigTaskFunctionalTests {
@@ -38,18 +41,21 @@ class BakeryPluginInitConfigTaskFunctionalTests {
 
     val File.configFile: File
         get() = if (absolutePath == projectDir.absolutePath)
-            resolve(SITE_YML)
-        else projectDir.resolve(SITE_YML)
+            resolve(CONFIG_FILE)
+        else projectDir.resolve(CONFIG_FILE)
 
     fun File.deleteConfigFile(): Boolean = configFile.delete()
 
 
     @BeforeTest
     fun prepare() {
-        // Do site.yml exist in root project folder?
-        assertThat(projectDir.resolve(SITE_YML))
-            .describedAs("$SITE_YML should not exists yet")
-            .doesNotExist()
+        //directory empty
+        assertThat(projectDir.isDirectory)
+            .describedAs("$projectDir should be a directory")
+            .isTrue
+        assertThat(projectDir.listFiles())
+            .describedAs("$projectDir should be an empty directory")
+            .isEmpty()
 
         info("Prepare temporary directory to host gradle build.")
 
@@ -61,26 +67,29 @@ class BakeryPluginInitConfigTaskFunctionalTests {
         assertThat(projectDir.configFile.readText(UTF_8))
             .describedAs("Config file should contains expectedStrings ; $configListOfStringContained")
             .contains(configListOfStringContained)
+        info("gradle and $CONFIG_FILE files successfully created.")
 
-        assertThat(projectDir.resolve("gradle/libs.versions.toml").readText(UTF_8))
+        assertThat(projectDir.resolve(LIBS_FILE).readText(UTF_8))
             .describedAs("libsVersionsTomlFile should contains the given list of strings")
             .contains(tomlListOfStringContained)
+        info("gradle and $LIBS_FILE files successfully created.")
 
-        assertThat(projectDir.resolve("build.gradle.kts").readText(UTF_8))
+        assertThat(projectDir.resolve(BUILD_FILE).readText(UTF_8))
             .describedAs("buildFile should contains the given list of strings")
             .contains(buildScriptListOfStringContained)
+        info("gradle and $BUILD_FILE files successfully created.")
 
-        assertThat(projectDir.resolve("settings.gradle.kts").readText(UTF_8))
+        assertThat(projectDir.resolve(SETTINGS_FILE).readText(UTF_8))
             .describedAs("settingsFile should contains the given list of strings")
-            .contains(settingsListOfStringContained.toMutableList().apply {  add("bakery-test")})
+            .contains(settingsListOfStringContained.toMutableList().apply { add("bakery-test") })
 
-        info("gradle and $SITE_YML files successfully created.")
+        info("gradle and $SETTINGS_FILE files successfully created.")
     }
 
     @Test
     fun `test initConfig task without config file`() {
 //        projectDir.deleteConfigFile()
-        info("$SITE_YML file successfully deleted.")
+        info("$CONFIG_FILE file successfully deleted.")
         val result = create()
             .forwardOutput()
             .withPluginClasspath()
@@ -111,7 +120,7 @@ class BakeryPluginInitConfigTaskFunctionalTests {
     @Test
     fun `tasks displays without config file`() {
         projectDir.deleteConfigFile()
-        info("$SITE_YML file successfully deleted.")
+        info("$CONFIG_FILE file successfully deleted.")
         assertThrows<UnexpectedBuildFailure> {
             create()
                 .forwardOutput()
