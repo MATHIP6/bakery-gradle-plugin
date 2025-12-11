@@ -89,6 +89,7 @@ object Deps {
     const val BAKERY_GROUP = "bakery"
     const val BAKE_TASK = "bake"
     private const val CNAME = "CNAME"
+    const val SITE_YML = "site.yml"
     val deps = """
             [versions]
             bakery = "0.0.6"

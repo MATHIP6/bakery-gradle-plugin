@@ -61,8 +61,8 @@ class BakeryPlugin : Plugin<Project> {
                     doFirst { site.createCnameFile(project) }
                     doLast {
                         pushPages(
-                            destPath = { "${project.layout.buildDirectory.get().asFile.absolutePath}${separator}${site.bake.destDirPath}" },
-                            pathTo = { "${project.layout.buildDirectory.get().asFile.absolutePath}${separator}${site.pushPage.to}" },
+                            destPath = { "${project.layout.buildDirectory.get().asFile.absolutePath}$separator${site.bake.destDirPath}" },
+                            pathTo = { "${project.layout.buildDirectory.get().asFile.absolutePath}$separator${site.pushPage.to}" },
                             site.pushPage,
                             project.logger
                         )

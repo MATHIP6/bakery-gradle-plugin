@@ -6,6 +6,8 @@ import com.cheroliv.bakery.BakeryPluginFunctionalTests.Companion.buildScriptList
 import com.cheroliv.bakery.BakeryPluginFunctionalTests.Companion.configListOfStringContained
 import com.cheroliv.bakery.BakeryPluginFunctionalTests.Companion.settingsListOfStringContained
 import com.cheroliv.bakery.BakeryPluginFunctionalTests.Companion.tomlListOfStringContained
+import com.cheroliv.bakery.Deps.BAKERY_GROUP
+import com.cheroliv.bakery.Deps.SITE_YML
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner.create
 import org.gradle.testkit.runner.UnexpectedBuildFailure
@@ -17,6 +19,8 @@ import java.io.File
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.text.Charsets.UTF_8
+
+
 
 class BakeryPluginInitConfigTaskFunctionalTests {
     companion object {
@@ -34,8 +38,8 @@ class BakeryPluginInitConfigTaskFunctionalTests {
 
     val File.configFile: File
         get() = if (absolutePath == projectDir.absolutePath)
-            resolve("site.yml")
-        else projectDir.resolve("site.yml")
+            resolve(SITE_YML)
+        else projectDir.resolve(SITE_YML)
 
     fun File.deleteConfigFile(): Boolean = configFile.delete()
 
@@ -43,14 +47,17 @@ class BakeryPluginInitConfigTaskFunctionalTests {
     @BeforeTest
     fun prepare() {
         // Do site.yml exist in root project folder?
-        assertThat(projectDir.resolve("site.yml"))
-            .describedAs("site.yml should not exists yet")
+        assertThat(projectDir.resolve(SITE_YML))
+            .describedAs("$SITE_YML should not exists yet")
             .doesNotExist()
+
         info("Prepare temporary directory to host gradle build.")
+
         projectDir.createSettingsFile()
         projectDir.createBuildScriptFile()
         projectDir.createDependenciesFile()
         projectDir.createConfigFile()
+
         assertThat(projectDir.configFile.readText(UTF_8))
             .describedAs("Config file should contains expectedStrings ; $configListOfStringContained")
             .contains(configListOfStringContained)
@@ -58,19 +65,22 @@ class BakeryPluginInitConfigTaskFunctionalTests {
         assertThat(projectDir.resolve("gradle/libs.versions.toml").readText(UTF_8))
             .describedAs("libsVersionsTomlFile should contains the given list of strings")
             .contains(tomlListOfStringContained)
+
         assertThat(projectDir.resolve("build.gradle.kts").readText(UTF_8))
             .describedAs("buildFile should contains the given list of strings")
             .contains(buildScriptListOfStringContained)
+
         assertThat(projectDir.resolve("settings.gradle.kts").readText(UTF_8))
             .describedAs("settingsFile should contains the given list of strings")
             .contains(settingsListOfStringContained.toMutableList().apply {  add("bakery-test")})
-        info("gradle and site.yml files successfully created.")
+
+        info("gradle and $SITE_YML files successfully created.")
     }
 
     @Test
     fun `test initConfig task without config file`() {
 //        projectDir.deleteConfigFile()
-        info("site.yml file successfully deleted.")
+        info("$SITE_YML file successfully deleted.")
         val result = create()
             .forwardOutput()
             .withPluginClasspath()
@@ -89,7 +99,7 @@ class BakeryPluginInitConfigTaskFunctionalTests {
         val result = create()
             .forwardOutput()
             .withPluginClasspath()
-            .withArguments("tasks", "--group=bakery")
+            .withArguments("tasks", "--group=$BAKERY_GROUP")
             .withProjectDir(projectDir)
             .build()
         assertThat(result.output)
@@ -101,12 +111,12 @@ class BakeryPluginInitConfigTaskFunctionalTests {
     @Test
     fun `tasks displays without config file`() {
         projectDir.deleteConfigFile()
-        info("site.yml file successfully deleted.")
+        info("$SITE_YML file successfully deleted.")
         assertThrows<UnexpectedBuildFailure> {
             create()
                 .forwardOutput()
                 .withPluginClasspath()
-                .withArguments("tasks", "--group=bakery")
+                .withArguments("tasks", "--group=$BAKERY_GROUP")
                 .withProjectDir(projectDir)
                 .build()
         }
