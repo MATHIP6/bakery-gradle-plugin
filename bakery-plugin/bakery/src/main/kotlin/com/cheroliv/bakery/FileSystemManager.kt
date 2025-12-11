@@ -3,17 +3,18 @@ package com.cheroliv.bakery
 import com.cheroliv.bakery.GitService.FileOperationResult
 import com.cheroliv.bakery.GitService.FileOperationResult.Failure
 import com.cheroliv.bakery.GitService.FileOperationResult.Success
+import com.cheroliv.bakery.RepositoryConfiguration.Companion.CNAME
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.slf4j.Logger
 import java.io.File
 import java.io.IOException
 import kotlin.text.Charsets.UTF_8
+
 
 object FileSystemManager {
 
@@ -53,25 +54,21 @@ object FileSystemManager {
 
 
     fun parseSiteConfiguration(yaml: String): SiteConfiguration =
-        ObjectMapper(YAMLFactory()).registerKotlinModule().readValue(yaml)
+        yamlMapper.readValue(yaml)
 
 
-    val Project.yamlMapper: ObjectMapper
-        get() = YAMLFactory().let(::ObjectMapper).disable(WRITE_DATES_AS_TIMESTAMPS).registerKotlinModule()
-
-
-    fun readSiteConfiguration(project: Project, configFile: File): SiteConfiguration = try {
-        project.yamlMapper.readValue(configFile)
-    } catch (e: Exception) {
-        throw GradleException("Failed to read site configuration from ${configFile.absolutePath}", e)
-    }
+    val yamlMapper: ObjectMapper
+        get() = YAMLFactory()
+            .let(::ObjectMapper)
+            .disable(WRITE_DATES_AS_TIMESTAMPS)
+            .registerKotlinModule()
 
 
     fun SiteConfiguration.createCnameFile(project: Project) {
         val cnameFile: File = project.layout.buildDirectory.get()
             .asFile
             .resolve(bake.destDirPath)
-            .resolve("CNAME")
+            .resolve(CNAME)
         if (cnameFile.exists()) cnameFile.delete()
         if (!bake.cname.isNullOrBlank()) {
             cnameFile.createNewFile()
@@ -80,7 +77,10 @@ object FileSystemManager {
     }
 
 
-    fun from(project: Project, configPath: String): SiteConfiguration {
+    fun from(
+        project: Project,
+        configPath: String
+    ): SiteConfiguration {
         val configFile = project.file(configPath)
         return read(project, configFile)
     }
@@ -88,21 +88,31 @@ object FileSystemManager {
     fun read(
         project: Project, configFile: File
     ): SiteConfiguration = try {
-        project.yamlMapper.readValue(configFile)
+        yamlMapper.readValue(configFile)
     } catch (e: Exception) {
         project.logger.error("Failed to read site configuration from ${configFile.absolutePath}", e)
         // Return a default/empty configuration to avoid build failure
         SiteConfiguration(
             BakeConfiguration(srcPath = "", destDirPath = "", cname = null),
             pushPage = GitPushConfiguration(
-                from = "", to = "", repo = RepositoryConfiguration(
-                    name = "", repository = "", credentials = RepositoryCredentials(username = "", password = "")
-                ), branch = "", message = ""
+                from = "",
+                to = "",
+                repo = RepositoryConfiguration(
+                    name = "", repository = "",
+                    credentials = RepositoryCredentials(username = "", password = "")
+                ),
+                branch = "",
+                message = ""
             ),
             pushMaquette = GitPushConfiguration(
-                from = "", to = "", repo = RepositoryConfiguration(
-                    name = "", repository = "", credentials = RepositoryCredentials("", "")
-                ), branch = "", message = ""
+                from = "",
+                to = "",
+                repo = RepositoryConfiguration(
+                    name = "", repository = "",
+                    credentials = RepositoryCredentials("", "")
+                ),
+                branch = "",
+                message = ""
             ),
         )
     }
