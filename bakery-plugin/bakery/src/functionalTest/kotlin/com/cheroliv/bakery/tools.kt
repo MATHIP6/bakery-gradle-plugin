@@ -6,12 +6,12 @@ import kotlin.text.Charsets.UTF_8
 
 
 fun File.createBuildScriptFile() {
-    resolve("settings.gradle.kts").run {
+    resolve("build.gradle.kts").run {
         assertThat(exists())
-            .describedAs("settings.gradle.kts should not exists yet.")
+            .describedAs("build.gradle.kts should not exists yet.")
             .isFalse
         assertThat(createNewFile())
-            .describedAs("setting.gradle.kts should be created.")
+            .describedAs("build.gradle.kts should be created.")
             .isTrue
         writeText(
             """
@@ -19,7 +19,6 @@ fun File.createBuildScriptFile() {
                     alias(libs.plugins.kotlin.jvm)
                     alias(libs.plugins.bakery)
                 }
-
                 bakery { configPath = file("site.yml").absolutePath }
             """.trimIndent(), UTF_8
         )
