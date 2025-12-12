@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.jbake.gradle.JBakeExtension
 import org.jbake.gradle.JBakePlugin
 import org.jbake.gradle.JBakeTask
+import java.io.Console
 import java.io.File
 import java.io.File.separator
 
@@ -16,10 +17,10 @@ import java.io.File.separator
 class BakeryPlugin : Plugin<Project> {
     companion object {
         const val BAKERY_GROUP = "bakery"
-        private const val BAKE_TASK = "bake"
-        private const val ASCIIDOCTOR_OPTION_REQUIRES = "asciidoctor.option.requires"
-        private const val ASCIIDOCTOR_DIAGRAM = "asciidoctor-diagram"
-        private const val CNAME = "CNAME"
+        const val BAKE_TASK = "bake"
+        const val ASCIIDOCTOR_OPTION_REQUIRES = "asciidoctor.option.requires"
+        const val ASCIIDOCTOR_DIAGRAM = "asciidoctor-diagram"
+        const val CNAME = "CNAME"
     }
 
     override fun apply(project: Project) {
@@ -32,6 +33,10 @@ class BakeryPlugin : Plugin<Project> {
         )
 
         project.afterEvaluate {
+            // If site.yml does not exist then jbakeExtension is not configured,
+            // publishSite and publishMaquette not registered.
+            // Only initConfig is available
+
             val site = from(project, extension.configPath.get())
 
             project.extensions.configure(JBakeExtension::class.java) {
@@ -110,7 +115,6 @@ class BakeryPlugin : Plugin<Project> {
                 }
             }
 
-
         }
 
         project.tasks.register("initConfig") { task ->
@@ -118,54 +122,212 @@ class BakeryPlugin : Plugin<Project> {
                 group = BAKERY_GROUP
                 description = "Initialize Bakery configuration."
 
-//                doLast {
-//                    val token = getOrPrompt(
-//                        project = project,
-//                        propertyName = "GitHub Token",
-//                        cliProperty = "githubToken",
-//                        sensitive = true
-//                    )
-//
-//                    val username = getOrPrompt(
-//                        project = project,
-//                        propertyName = "GitHub Username",
-//                        cliProperty = "githubUsername",
-//                        sensitive = false
-//                    )
-//
-//                    val repo = getOrPrompt(
-//                        project = project,
-//                        propertyName = "GitHub Repository URL",
-//                        cliProperty = "githubRepo",
-//                        sensitive = false,
-//                        example = "https://github.com/username/repo.git"
-//                    )
-//
-//                    val configPath = getOrPrompt(
-//                        project = project,
-//                        propertyName = "Config Path",
-//                        cliProperty = "configPath",
-//                        sensitive = false,
-//                        example = "config/bakery.yml",
-//                        default = "config/bakery.yml"
-//                    )
-//
-//                    project.logger.lifecycle("✓ Bakery configuration completed:")
-//                    project.logger.lifecycle("  Username: $username")
-//                    project.logger.lifecycle("  Repository: $repo")
-//                    project.logger.lifecycle("  Config Path: $configPath")
-//                    project.logger.lifecycle("  Token: ${if (token.isNotEmpty()) "***configured***" else "not set"}")
-//
-//                    saveConfiguration(project, token, username, repo, configPath)
-//
-//                    project.logger.lifecycle("")
-//                    project.logger.lifecycle("✓ Configuration saved successfully!")
-//                    project.logger.lifecycle("  You can now run: ./gradlew bake")
-//                }
+                doLast {
+                    val token = getOrPrompt(
+                        project = project,
+                        propertyName = "GitHub Token",
+                        cliProperty = "githubToken",
+                        sensitive = true
+                    )
+
+                    val username = getOrPrompt(
+                        project = project,
+                        propertyName = "GitHub Username",
+                        cliProperty = "githubUsername",
+                        sensitive = false
+                    )
+
+                    val repo = getOrPrompt(
+                        project = project,
+                        propertyName = "GitHub Repository URL",
+                        cliProperty = "githubRepo",
+                        sensitive = false,
+                        example = "https://github.com/username/repo.git"
+                    )
+
+                    val configPath = getOrPrompt(
+                        project = project,
+                        propertyName = "Config Path",
+                        cliProperty = "configPath",
+                        sensitive = false,
+                        example = "config/bakery.yml",
+                        default = "config/bakery.yml"
+                    )
+
+                    project.logger.lifecycle("✓ Bakery configuration completed:")
+                    project.logger.lifecycle("  Username: $username")
+                    project.logger.lifecycle("  Repository: $repo")
+                    project.logger.lifecycle("  Config Path: $configPath")
+                    project.logger.lifecycle("  Token: ${if (token.isNotEmpty()) "***configured***" else "not set"}")
+
+                    saveConfiguration(project, token, username, repo, configPath)
+
+                    project.logger.lifecycle("")
+                    project.logger.lifecycle("✓ Configuration saved successfully!")
+                    project.logger.lifecycle("  You can now run: ./gradlew bake")
+                }
             }
         }
 
     }
+
+    fun getOrPrompt(
+        project: Project,
+        propertyName: String,
+        cliProperty: String,
+        sensitive: Boolean = false,
+        example: String? = null,
+        default: String? = null
+    ): String {
+        // 1. Vérifier les propriétés du projet (-P)
+        if (project.hasProperty(cliProperty)) {
+            val value = project.property(cliProperty) as String
+            if (value.isNotBlank()) return value
+        }
+
+        // 2. Vérifier les variables d'environnement
+        val envVar = cliProperty.uppercase().replace(Regex("([a-z])([A-Z])"), "$1_$2")
+        System.getenv(envVar)?.takeIf { it.isNotBlank() }?.let { return it }
+
+        // 3. Utiliser la valeur par défaut si fournie
+        default?.let { return it }
+
+        // 4. Demander interactivement
+        return promptUser(propertyName, sensitive, example, project.logger)
+    }
+
+    fun promptUser(
+        propertyName: String,
+        sensitive: Boolean,
+        example: String?,
+        logger: org.gradle.api.logging.Logger
+    ): String {
+        val console: Console? = System.console()
+
+        return if (console != null) {
+            if (sensitive) {
+                promptSensitive(console, propertyName, logger)
+            } else {
+                promptNormal(console, propertyName, example, logger)
+            }
+        } else {
+            promptFallback(propertyName, sensitive, example, logger)
+        }
+    }
+    private fun promptSensitive(
+        console: Console,
+        propertyName: String,
+        logger: org.gradle.api.logging.Logger
+    ): String {
+        var input: CharArray?
+        do {
+            print("Enter $propertyName (hidden): ")
+            input = console.readPassword()
+            if (input == null || input.isEmpty()) {
+                logger.warn("$propertyName cannot be empty. Please try again.")
+            }
+        } while (input == null || input.isEmpty())
+
+        return String(input).also {
+            input.fill('0')
+        }
+    }
+
+    private fun promptNormal(
+        console: Console,
+        propertyName: String,
+        example: String?,
+        logger: org.gradle.api.logging.Logger
+    ): String {
+        val exampleText = example?.let { " (e.g., $it)" } ?: ""
+        var input: String?
+        do {
+            print("Enter $propertyName$exampleText: ")
+            input = console.readLine()
+            if (input.isNullOrBlank()) {
+                logger.warn("$propertyName cannot be empty. Please try again.")
+            }
+        } while (input.isNullOrBlank())
+
+        return input
+    }
+
+    private fun promptFallback(
+        propertyName: String,
+        sensitive: Boolean,
+        example: String?,
+        logger: org.gradle.api.logging.Logger
+    ): String {
+        val exampleText = example?.let { " (e.g., $it)" } ?: ""
+        val sensitiveNote = if (sensitive) " (will be visible)" else ""
+
+        logger.lifecycle("Console not available. Using standard input.")
+        print("Enter $propertyName$exampleText$sensitiveNote: ")
+
+        var input: String?
+        do {
+            input = readLine()
+            if (input.isNullOrBlank()) {
+                logger.warn("$propertyName cannot be empty. Please try again.")
+                print("Enter $propertyName$exampleText: ")
+            }
+        } while (input.isNullOrBlank())
+
+        return input
+    }
+
+    private fun saveConfiguration(
+        project: Project,
+        token: String,
+        username: String,
+        repo: String,
+        configPath: String
+    ) {
+        // Sauvegarder les credentials GitHub
+        val githubConfigFile = project.rootProject.file(".github-config")
+        githubConfigFile.writeText("""
+            |# GitHub Configuration
+            |# DO NOT COMMIT THIS FILE - Add it to .gitignore
+            |github.username=$username
+            |github.repo=$repo
+            |github.token=$token
+        """.trimMargin())
+
+        // Sauvegarder le chemin de configuration dans gradle.properties
+        val gradlePropertiesFile = project.rootProject.file("gradle.properties")
+        val properties = if (gradlePropertiesFile.exists()) {
+            gradlePropertiesFile.readLines().toMutableList()
+        } else {
+            mutableListOf()
+        }
+
+        // Retirer l'ancienne ligne configPath si elle existe
+        properties.removeIf { it.startsWith("bakery.configPath=") }
+        properties.add("bakery.configPath=$configPath")
+
+        gradlePropertiesFile.writeText(properties.joinToString("\n"))
+
+        project.logger.lifecycle("Configuration saved to:")
+        project.logger.lifecycle("  - ${githubConfigFile.absolutePath}")
+        project.logger.lifecycle("  - ${gradlePropertiesFile.absolutePath}")
+        project.logger.warn("")
+        project.logger.warn("⚠️  IMPORTANT SECURITY NOTES:")
+        project.logger.warn("  • Add .github-config to your .gitignore")
+        project.logger.warn("  • Never commit your GitHub token")
+
+        // Vérifier .gitignore
+        val gitignore = project.rootProject.file(".gitignore")
+        if (gitignore.exists()) {
+            val content = gitignore.readText()
+            if (!content.contains(".github-config")) {
+                project.logger.warn("  • .github-config is NOT in your .gitignore!")
+            }
+        } else {
+            project.logger.warn("  • No .gitignore file found!")
+        }
+    }
+
+
 }
 
 /*

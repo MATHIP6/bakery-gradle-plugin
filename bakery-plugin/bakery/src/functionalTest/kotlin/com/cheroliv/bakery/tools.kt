@@ -1,5 +1,8 @@
 package com.cheroliv.bakery
 
+import com.cheroliv.bakery.FuncTestsConstants.CONFIG_FILE
+import com.cheroliv.bakery.FuncTestsConstants.GRADLE_DIR
+import com.cheroliv.bakery.FuncTestsConstants.LIBS_VERSIONS_TOML_FILE
 import com.cheroliv.bakery.FuncTestsConstants.deps
 import org.assertj.core.api.Assertions.assertThat
 import java.io.File
@@ -71,18 +74,18 @@ fun File.createSettingsFile() {
 }
 
 fun File.createDependenciesFile() {
-    val gradleFolder = resolve("gradle")
-    val tomlFile = gradleFolder.resolve("libs.versions.toml")
+    val gradleFolder = resolve(GRADLE_DIR)
+    val tomlFile = gradleFolder.resolve(LIBS_VERSIONS_TOML_FILE)
     if (!gradleFolder.exists()) gradleFolder.mkdirs()
     if (tomlFile.exists()) if (!tomlFile.delete())
-        throw IOException("Could not delete existing libs.versions.toml file.")
+        throw IOException("Could not delete existing $LIBS_VERSIONS_TOML_FILE file.")
     if (!tomlFile.exists()) tomlFile.createNewFile()
     tomlFile.writeText(deps, UTF_8)
 }
 
 fun File.createConfigFile() {
-    val configFile = File("").absoluteFile.parentFile?.parentFile?.resolve("site.yml")
-    configFile?.copyTo(resolve("site.yml"), true)
+    val configFile = File("").absoluteFile.parentFile?.parentFile?.resolve(CONFIG_FILE)
+    configFile?.copyTo(resolve(CONFIG_FILE), true)
 }
 
 object FuncTestsConstants {

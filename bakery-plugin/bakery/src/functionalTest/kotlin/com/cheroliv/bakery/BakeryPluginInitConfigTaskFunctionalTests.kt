@@ -45,6 +45,52 @@ class BakeryPluginInitConfigTaskFunctionalTests {
     fun File.deleteConfigFile(): Boolean = configFile.delete()
 
 
+    @Test
+    fun `test initConfig task without config file`() {
+        projectDir.deleteConfigFile()
+        info("$CONFIG_FILE file successfully deleted.")
+//        val result = create()
+//            .forwardOutput()
+//            .withPluginClasspath()
+//            .withArguments("initConfig")
+//            .withProjectDir(projectDir)
+//            .build()
+//        assertThat(result.output)
+//            .describedAs("""Gradle task tasks output should contains 'initConfig' and 'Initialize configuration.'""")
+//            .contains("Initialize configuration.", "initConfig")
+//        info("✓ tasks displays the initConfig task's description correctly")
+    }
+
+
+    @Test
+    fun `tasks displays with config file`() {
+        val result = create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("tasks", "--group=$BAKERY_GROUP")
+            .withProjectDir(projectDir)
+            .build()
+        assertThat(result.output)
+            .describedAs("""Gradle task tasks output should contains 'initConfig' and 'Initialize configuration.'""")
+            .contains("Initialize Bakery configuration.", "initConfig")
+        info("✓ tasks displays the initConfig task's description correctly")
+    }
+
+    @Test
+    fun `tasks displays without config file`() {
+        projectDir.deleteConfigFile()
+        info("$CONFIG_FILE file successfully deleted.")
+        assertThrows<UnexpectedBuildFailure> {
+            create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("tasks", "--group=$BAKERY_GROUP")
+                .withProjectDir(projectDir)
+                .build()
+        }
+        info("✓ without config file, the project fails to build.")
+    }
+
     @BeforeTest
     fun prepare() {
         //directory empty
@@ -82,51 +128,5 @@ class BakeryPluginInitConfigTaskFunctionalTests {
             .contains(settingsListOfStringContained.toMutableList().apply { add("bakery-test") })
 
         info("gradle and $SETTINGS_FILE files successfully created.")
-    }
-
-    @Test
-    fun `test initConfig task without config file`() {
-//        projectDir.deleteConfigFile()
-        info("$CONFIG_FILE file successfully deleted.")
-        val result = create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withArguments("initConfig")
-            .withProjectDir(projectDir)
-            .build()
-//        assertThat(result.output)
-//            .describedAs("""Gradle task tasks output should contains 'initConfig' and 'Initialize configuration.'""")
-//            .contains("Initialize configuration.", "initConfig")
-//        info("✓ tasks displays the initConfig task's description correctly")
-    }
-
-
-    @Test
-    fun `tasks displays with config file`() {
-        val result = create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withArguments("tasks", "--group=$BAKERY_GROUP")
-            .withProjectDir(projectDir)
-            .build()
-        assertThat(result.output)
-            .describedAs("""Gradle task tasks output should contains 'initConfig' and 'Initialize configuration.'""")
-            .contains("Initialize Bakery configuration.", "initConfig")
-        info("✓ tasks displays the initConfig task's description correctly")
-    }
-
-    @Test
-    fun `tasks displays without config file`() {
-        projectDir.deleteConfigFile()
-        info("$CONFIG_FILE file successfully deleted.")
-        assertThrows<UnexpectedBuildFailure> {
-            create()
-                .forwardOutput()
-                .withPluginClasspath()
-                .withArguments("tasks", "--group=$BAKERY_GROUP")
-                .withProjectDir(projectDir)
-                .build()
-        }
-        info("✓ without config file, the project fails to build.")
     }
 }

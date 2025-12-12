@@ -3,7 +3,7 @@
     <head th:fragment="head">
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Cheroliv - Développeur Formateur | Ingénierie Pédagogique</title>
+        <title>Blog - template</title>
 
         <script th:inline="javascript">
           // IIFE to avoid polluting global scope

@@ -11,13 +11,7 @@
 
 <div class="main-content-wrapper">
     <div th:replace="~{hero_section.thyme::hero}" />
-    <div th:replace="~{about_section.thyme::about-section}" />
-    <div th:replace="~{services_section.thyme::services-section}" />
-    <div th:replace="~{expertise_section.thyme::expertise-section}" />
-    <div th:replace="~{formations_section.thyme::formations-section}" />
-    <div th:replace="~{portfolio_section.thyme::portfolio-section}" />
     <div th:replace="~{blog_section.thyme::blog-section}" />
-    <div th:replace="~{contact_section.thyme::contact-section}" />
 </div>
 
 <!-- Script de mock pour les tests UI (doit être avant script.js) -->

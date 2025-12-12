@@ -15,22 +15,20 @@
             <div class="col-lg-6">
                 <div class="hero-content">
                     <h1 class="display-4 fw-bold mb-4">
-                        Développeur Formateur
-                        <span class="text-primary">Spécialisé en Ingénierie Pédagogique</span>
+                        Bakery
+                        <span class="text-primary">Template</span>
                     </h1>
                     <p class="lead mb-4">
-                        Passionné par l'innovation pédagogique et les technologies éducatives,
-                        je conçois et développe des solutions e-learning sur mesure pour
-                        transformer l'apprentissage en expérience engageante.
+                        A simple and elegant space to share your knowledge, stories, and passions with the world..
                     </p>
                     <div class="hero-buttons d-grid d-lg-inline-flex gap-3">
                         <a href="#services" class="btn btn-primary btn-hero-style">
                             <i class="bi bi-rocket me-2"></i>
-                            Mes Services
+                            Project Read Me
                         </a>
                         <a href="#contact" class="btn btn-outline-primary btn-hero-style">
                             <i class="bi bi-envelope me-2"></i>
-                            Me Contacter
+                            Demo
                         </a>
                     </div>
                 </div>
@@ -39,9 +37,9 @@
                 <div class="hero-image">
                     <div class="hero-card">
                         <div class="card-body text-center">
-                            <img src="img/undraw_road_to_knowledge_light.svg" class="hero-svg-icon" alt="Innovation Pédagogique"/>
-                            <h3>Innovation Pédagogique</h3>
-                            <p>Développement d'expériences d'apprentissage interactives et engageantes</p>
+                            <i class="bi bi-laptop display-1 text-primary mb-3"></i>
+                            <h3>Start Writing</h3>
+                            <p>Powered by the robustness of Bootstrap 5, this template offers you a seamless publishing experience and a fully responsive design, perfect for all your readers..</p>
                         </div>
                     </div>
                 </div>
