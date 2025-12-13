@@ -2,7 +2,6 @@
 
 package com.cheroliv.bakery
 
-
 import com.cheroliv.bakery.FuncTestsConstants.BAKERY_GROUP
 import com.cheroliv.bakery.FuncTestsConstants.BUILD_FILE
 import com.cheroliv.bakery.FuncTestsConstants.CONFIG_FILE
@@ -20,6 +19,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
 import java.io.File
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.text.Charsets.UTF_8
 
@@ -41,6 +41,38 @@ class BakeryPluginInitConfigTaskFunctionalTests {
         else projectDir.resolve(CONFIG_FILE)
 
     private fun File.deleteConfigFile(): Boolean = configFile.delete()
+
+    /**
+     * # Mode interactif
+     * ./gradlew initConfig
+     *
+     * # Avec paramètres
+     * ./gradlew initConfig \
+     *   -PGitHubToken=ghp_xxx \
+     *   -PGitHubUsername=username \
+     *   -PGitHubRepositoryURL=https://github.com/username/repo.git
+     *
+     * # Mode non-interactif (échoue si paramètres manquants)
+     * ./gradlew initConfig --no-interactive -PGitHubUsername=username
+     */
+    @Test
+    @Ignore
+    fun `test initConfig task without config file`() {
+        projectDir.deleteConfigFile()
+        info("$CONFIG_FILE file successfully deleted.")
+        info("Run gradle task: initConfig.")
+        val result = create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("initConfig", "--group=$BAKERY_GROUP")
+            .withProjectDir(projectDir)
+            .build()
+//        ```./gradlew initConfig \
+//        -PGitHubToken=ghp_xxx \
+//        -PGitHubUsername=cheroliv \
+//        -PGitHubRepositoryURL=https://github.com/cheroliv/bakery.git```
+
+    }
 
 
     @Test
