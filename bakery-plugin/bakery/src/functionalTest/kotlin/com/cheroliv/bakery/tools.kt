@@ -110,7 +110,7 @@ object FuncTestsConstants {
     val settingsListOfStringContained = listOf(
         "pluginManagement", "repositories",
         "mavenLocal()", "gradlePluginPortal()",
-        "mavenCentral()", "google()",
+        "mavenCentral()",
         "dependencyResolutionManagement",
         "rootProject.name", "bakery"
     )
