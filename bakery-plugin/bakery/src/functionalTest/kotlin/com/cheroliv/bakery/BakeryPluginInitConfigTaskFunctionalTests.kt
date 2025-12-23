@@ -24,9 +24,9 @@ import kotlin.test.Test
 import kotlin.text.Charsets.UTF_8
 
 
-class BakeryPluginconfigureSiteTaskFunctionalTests {
+class BakeryPluginConfigureSiteTaskFunctionalTests {
     companion object {
-        private val log: Logger by lazy { getLogger(BakeryPluginInitSiteTaskFunctionalTests::class.java) }
+        private val log: Logger by lazy { getLogger(BakeryPluginConfigureSiteTaskFunctionalTests::class.java) }
 
         private fun info(message: String) = message
             .apply(log::info)
@@ -36,7 +36,6 @@ class BakeryPluginconfigureSiteTaskFunctionalTests {
     @field:TempDir
     private lateinit var projectDir: File
 
-    // TODO:Introduce parameter overridden by cli parameters
     private val File.configFile: File
         get() = if (absolutePath == projectDir.absolutePath) resolve(CONFIG_FILE)
         else projectDir.resolve(CONFIG_FILE)
@@ -57,17 +56,18 @@ class BakeryPluginconfigureSiteTaskFunctionalTests {
      * ./gradlew configureSite --no-interactive -PGitHubUsername=username
      */
     @Test
-    @Ignore
-    fun `test configureSite task without config file`() {
+    fun `test configureSite task without config file with --no-interactive parameter`() {
         projectDir.deleteConfigFile()
         info("$CONFIG_FILE file successfully deleted.")
         info("Run gradle task: configureSite.")
         val result = create()
             .forwardOutput()
             .withPluginClasspath()
-            .withArguments("configureSite", "--group=$BAKERY_GROUP")
+            .withArguments("configureSite", "--no-interactive")
             .withProjectDir(projectDir)
             .build()
+
+//        assertThat(result.output)
 //        ```./gradlew configureSite \
 //        -PGitHubToken=ghp_xxx \
 //        -PGitHubUsername=cheroliv \

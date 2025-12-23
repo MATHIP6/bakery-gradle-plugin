@@ -1,5 +1,4 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-<!--suppress CheckTagEmptyBody -->
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       lang="fr">
@@ -38,13 +37,13 @@
                 <div class="btn-group ms-3">
                     <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-journal-bookmark me-2"></i>
-                        Mémos
+                        Mémo
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#"><i class="fa-solid fa-code me-2"></i>Guides de Développement</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fa-solid fa-book me-2"></i>Tutoriels</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fa-solid fa-lightbulb me-2"></i>Astuces & Conseils</a></li>
-                        <li><hr class="dropdown-divider"/></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#"><i class="fa-solid fa-bookmark me-2"></i>Ressources Utiles</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fa-solid fa-link me-2"></i>Liens Externes</a></li>
                     </ul>

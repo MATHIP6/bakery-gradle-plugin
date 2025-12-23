@@ -1,19 +1,17 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 
-<!--suppress CheckEmptyScriptTag, CheckTagEmptyBody, HtmlRequiredTitleElement -->
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-      data-bs-theme="light"
-      lang="fr">
+      lang="fr" data-bs-theme="light">
 
-<head th:replace="header.thyme::head"/>
+<head th:replace="header.thyme::head" />
 
 <body>
-<div th:replace="menu.thyme::menu"/>
+<div th:replace="menu.thyme::menu" />
 
 <div class="main-content-wrapper">
-    <div th:replace="~{hero_section.thyme::hero}"/>
-    <div th:replace="~{blog_section.thyme::blog-section}"/>
+    <div th:replace="~{hero_section.thyme::hero}" />
+    <div th:replace="~{blog_section.thyme::blog-section}" />
 </div>
 
 <!-- Script de mock pour les tests UI (doit être avant script.js) -->
@@ -35,12 +33,10 @@
 </script>
 
 <!-- =============================================================================================================== -->
-<div th:replace="footer.thyme::footer"/>
+<div th:replace="footer.thyme::footer" />
 <!-- =============================================================================================================== -->
 <!-- Scroll to Top Button -->
-<button id="scrollToTopBtn"
-        class="btn btn-primary shadow-sm"
-        aria-label="Retour en haut de page">
+<button id="scrollToTopBtn" class="btn btn-primary shadow-sm" aria-label="Retour en haut de page">
     <i class="bi bi-arrow-up"></i>
 </button>
 </body>
