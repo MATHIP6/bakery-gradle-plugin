@@ -19,7 +19,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
 import java.io.File
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.text.Charsets.UTF_8
 
@@ -63,6 +62,7 @@ class BakeryPluginConfigureSiteTaskFunctionalTests {
         val result = create()
             .forwardOutput()
             .withPluginClasspath()
+//            .withArguments("configureSite")
             .withArguments("configureSite", "--no-interactive")
             .withProjectDir(projectDir)
             .build()
@@ -72,7 +72,6 @@ class BakeryPluginConfigureSiteTaskFunctionalTests {
 //        -PGitHubToken=ghp_xxx \
 //        -PGitHubUsername=cheroliv \
 //        -PGitHubRepositoryURL=https://github.com/cheroliv/bakery.git```
-
     }
 
 
