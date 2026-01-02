@@ -267,6 +267,7 @@ object FuncTestsConstants {
     const val BAKE_TASK = "bake"
     const val CNAME = "CNAME"
     const val CONFIG_FILE = "site.yml"
+    const val GRADLE_PROPERTIES_FILE = "site.yml"
     const val BUILD_FILE = "build.gradle.kts"
     const val SETTINGS_FILE = "settings.gradle.kts"
     const val GRADLE_DIR = "gradle"
