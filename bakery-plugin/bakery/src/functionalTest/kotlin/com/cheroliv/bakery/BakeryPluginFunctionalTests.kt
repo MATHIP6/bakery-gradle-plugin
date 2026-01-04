@@ -247,6 +247,7 @@ Group
             .apply(::println)
     }
 
+    //TODO: WIP there, testing differents type of configuration like gradle.properties, yaml file or cli parameters
 
     @AfterEach
     fun teardown(testInfo: TestInfo) = listOf(
