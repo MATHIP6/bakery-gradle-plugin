@@ -39,7 +39,7 @@ dependencies {
     testImplementation("io.cucumber:cucumber-java:7.33.0")
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.33.0")
     testImplementation("io.cucumber:cucumber-picocontainer:7.33.0")
-    testImplementation("org.junit.platform:junit-platform-suite:6.0.1")
+    testImplementation("org.junit.platform:junit-platform-suite:1.14.1")
 
 }
 
