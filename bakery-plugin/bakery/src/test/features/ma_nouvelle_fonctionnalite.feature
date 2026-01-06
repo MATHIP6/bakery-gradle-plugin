@@ -1,3 +1,4 @@
+#noinspection CucumberUndefinedStep
 Feature: Ma nouvelle fonctionnalité
 
   Scenario: Mon scénario de test
