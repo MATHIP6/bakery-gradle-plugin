@@ -1,6 +1,7 @@
 package com.cheroliv.bakery.scenarios
 
 import io.cucumber.junit.platform.engine.Constants.*
+import org.junit.platform.commons.annotation.Testable
 import org.junit.platform.suite.api.ConfigurationParameter
 import org.junit.platform.suite.api.IncludeEngines
 import org.junit.platform.suite.api.Suite
@@ -10,11 +11,12 @@ import org.junit.platform.suite.api.Suite
  * À placer dans src/test/scenarios/com/cheroliv/bakery/scenarios/
  */
 @Suite
+@Testable
 @IncludeEngines("cucumber")
-// CORRECTION: Supprimer @SelectClasspathResource et utiliser FEATURES_PROPERTY_NAME à la place
+// CORRECTION: Scanner tous les .feature du classpath
 @ConfigurationParameter(
     key = FEATURES_PROPERTY_NAME,
-    value = "classpath:ma_nouvelle_fonctionnalite.feature"
+    value = "classpath:"
 )
 @ConfigurationParameter(
     key = GLUE_PROPERTY_NAME,
@@ -28,5 +30,4 @@ import org.junit.platform.suite.api.Suite
     key = FILTER_TAGS_PROPERTY_NAME,
     value = "not @wip"
 )
-@org.junit.platform.commons.annotation.Testable
 class CucumberTestRunner

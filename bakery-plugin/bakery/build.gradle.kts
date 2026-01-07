@@ -17,6 +17,11 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+
+    // Coroutines - IMPORTANT pour les tests asynchrones
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.9.0")
+
     testImplementation(kotlin("test-junit5"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.slf4j:slf4j-api:2.0.17")
