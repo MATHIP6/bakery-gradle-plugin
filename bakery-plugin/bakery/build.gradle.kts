@@ -40,7 +40,6 @@ dependencies {
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.33.0")
     testImplementation("io.cucumber:cucumber-picocontainer:7.33.0")
     testImplementation("org.junit.platform:junit-platform-suite:1.14.1")
-
 }
 
 kotlin.jvmToolchain(21)
@@ -53,43 +52,112 @@ tasks.withType<Test> {
     }
 }
 
-val functionalTest: SourceSet by sourceSets.creating
+// 1. Créer le SourceSet functionalTest
+val functionalTest: SourceSet by sourceSets.creating {
+    java {
+        srcDirs("src/functionalTest/kotlin")
+    }
+    resources {
+        srcDirs("src/functionalTest/resources")
+    }
+}
 
+// 2. Ajouter GradleTestKit à functionalTest (SANS hériter de testImplementation)
+dependencies {
+    add(functionalTest.implementationConfigurationName, gradleTestKit())
+    add(functionalTest.implementationConfigurationName, kotlin("stdlib-jdk8"))
+    add(functionalTest.implementationConfigurationName, kotlin("test-junit5"))
+
+    // Ajouter les dépendances nécessaires explicitement
+    add(functionalTest.implementationConfigurationName, "org.slf4j:slf4j-api:2.0.17")
+    add(functionalTest.runtimeOnlyConfigurationName, "ch.qos.logback:logback-classic:1.5.20")
+    add(functionalTest.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
+
+    // CORRECTION: Ajouter AssertJ pour les assertions
+    add(functionalTest.implementationConfigurationName, libs.assertj.core)
+
+    // Ajouter Mockito si nécessaire
+    add(functionalTest.implementationConfigurationName, libs.mockito.kotlin)
+    add(functionalTest.implementationConfigurationName, libs.mockito.junit.jupiter)
+}
+
+// 3. Tâche pour les tests fonctionnels
 val functionalTestTask = tasks.register<Test>("functionalTest") {
+    description = "Runs functional tests."
+    group = "verification"
     testClassesDirs = functionalTest.output.classesDirs
     classpath = configurations[functionalTest.runtimeClasspathConfigurationName] + functionalTest.output
-    configurations[functionalTest.implementationConfigurationName]
-        .extendsFrom(configurations.testImplementation.get())
-}
 
-// Configuration des sources sets pour Cucumber
-sourceSets {
-    test {
-        resources {
-            srcDir("src/test/features")
-        }
-        java {
-            srcDir("src/test/steps")
-        }
-    }
-}
-// Tâche dédiée aux tests Cucumber
-val cucumberTest = tasks.register<Test>("cucumberTest") {
-    description = "Runs Cucumber BDD tests"
-    group = "verification"
-
-    useJUnitPlatform {
-        includeTags("cucumber")
-    }
-
-    systemProperty("cucumber.junit-platform.naming-strategy", "long")
-    systemProperty("cucumber.plugin", "pretty, html:build/reports/cucumber.html, json:build/reports/cucumber.json")
+    useJUnitPlatform()
 
     testLogging {
         events("passed", "skipped", "failed")
         showStandardStreams = true
     }
 }
+
+// CORRECTION: Gérer les duplications de ressources pour functionalTest
+tasks.named<ProcessResources>(functionalTest.processResourcesTaskName) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// 4. Configurer les sources sets pour Cucumber (test standard)
+sourceSets {
+    test {
+        resources {
+            srcDir("src/test/features")
+        }
+        java {
+            srcDir("src/test/scenarios")  // Steps dans scenarios/
+        }
+    }
+}
+
+// 5. Faire hériter testImplementation de functionalTest (pas l'inverse !)
+configurations.named("testImplementation").configure {
+    extendsFrom(configurations.named(functionalTest.implementationConfigurationName).get())
+}
+
+configurations.named("testRuntimeOnly").configure {
+    extendsFrom(configurations.named(functionalTest.runtimeOnlyConfigurationName).get())
+}
+
+// 6. Ajouter les classes compilées de functionalTest au classpath de test
+dependencies {
+    testImplementation(functionalTest.output)
+}
+
+// 7. Tâche dédiée aux tests Cucumber
+val cucumberTest = tasks.register<Test>("cucumberTest") {
+    description = "Runs Cucumber BDD tests"
+    group = "verification"
+
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = configurations.testRuntimeClasspath.get() +
+            sourceSets.test.get().output +
+            functionalTest.output
+
+    useJUnitPlatform {
+        // CORRECTION: Ne pas filtrer par tag ici, ça filtre les engines JUnit
+        // Le filtrage des scénarios Cucumber se fait dans le runner via FILTER_TAGS_PROPERTY_NAME
+        excludeEngines("junit-jupiter")
+    }
+
+    systemProperty("cucumber.junit-platform.naming-strategy", "long")
+
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+
+    outputs.upToDateWhen { false }
+
+    // S'assurer que functionalTest et main sont compilés avant
+    dependsOn(functionalTest.classesTaskName)
+    dependsOn(tasks.classes)
+}
+
 gradlePlugin {
     plugins {
         create("bakery") {
