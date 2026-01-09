@@ -172,4 +172,21 @@ class BakeryPluginConfigureSiteTaskFunctionalTempDirTests {
 
         info("gradle and $SETTINGS_FILE files successfully created.")
     }
+
+    @Suppress("DANGEROUS_CHARACTERS", "FunctionName")
+    @Test
+    fun `Template folder does not exist`() {
+        info("initSiteTest")
+        info("Delete temporary directory if exists.")
+        info("Project temporary path : ${projectDir.path}")
+        if (projectDir.resolve("src/jbake").exists()) {
+            projectDir.resolve("src/jbake").deleteRecursively()
+        }
+        assertThat(projectDir.resolve("src/jbake").exists())
+            .describedAs("src/jbake should not exists anymore in temporary project folder : ${projectDir.path}")
+            .isFalse
+        info("Do template folder exist in default path : src/jbake?")
+        // Est ce que le dossier src/jbake existe?
+    }
+
 }
