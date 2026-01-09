@@ -13,6 +13,8 @@ import com.cheroliv.bakery.FuncTestsConstants.settingsListOfStringContained
 import com.cheroliv.bakery.FuncTestsConstants.tomlListOfStringContained
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.GradleRunner.create
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.io.TempDir
 import org.slf4j.Logger
@@ -40,6 +42,55 @@ class BakeryPluginFunctionalTests {
         else projectDir.resolve(CONFIG_FILE)
 
     private fun File.deleteConfigFile(): Boolean = configFile.delete()
+
+
+    @BeforeTest
+    fun setUp() {
+        //directory empty
+        assertThat(projectDir.isDirectory)
+            .describedAs("$projectDir should be a directory.")
+            .isTrue
+        assertThat(projectDir.listFiles())
+            .describedAs("$projectDir should be an empty directory.")
+            .isEmpty()
+
+        info("Prepare temporary directory to host gradle build.")
+
+        projectDir.createSettingsFile()
+        projectDir.createBuildScriptFile()
+        projectDir.createDependenciesFile()
+        projectDir.createConfigFile()
+
+        assertThat(projectDir.configFile.readText(UTF_8))
+            .describedAs("Config file should contains expectedStrings ; $configListOfStringContained")
+            .contains(configListOfStringContained)
+        info("gradle and $CONFIG_FILE files successfully created.")
+
+        assertThat(projectDir.resolve(LIBS_FILE).readText(UTF_8))
+            .describedAs("libsVersionsTomlFile should contains the given list of strings")
+            .contains(tomlListOfStringContained)
+        info("gradle and $LIBS_FILE files successfully created.")
+
+        assertThat(projectDir.resolve(BUILD_FILE).readText(UTF_8))
+            .describedAs("buildFile should contains the given list of strings")
+            .contains(buildScriptListOfStringContained)
+        info("gradle and $BUILD_FILE files successfully created.")
+
+        assertThat(projectDir.resolve(SETTINGS_FILE).readText(UTF_8))
+            .describedAs("settingsFile should contains the given list of strings")
+            .contains(settingsListOfStringContained.toMutableList().apply { add("bakery-test") })
+
+        info("gradle and $SETTINGS_FILE files successfully created.")
+    }
+
+    @AfterEach
+    fun teardown(testInfo: TestInfo) = listOf(
+        "✓ Test finished: ${testInfo.displayName}",
+        "─".repeat(60)
+    ).forEach {
+        it.apply(log::info)
+            .apply(::println)
+    }
 
     /**
      * # Mode interactif
@@ -131,46 +182,6 @@ class BakeryPluginFunctionalTests {
                 .build()
         }
         info("✓ without config file, the project does not fail to build.")
-    }
-
-
-    @BeforeTest
-    fun setUp() {
-        //directory empty
-        assertThat(projectDir.isDirectory)
-            .describedAs("$projectDir should be a directory.")
-            .isTrue
-        assertThat(projectDir.listFiles())
-            .describedAs("$projectDir should be an empty directory.")
-            .isEmpty()
-
-        info("Prepare temporary directory to host gradle build.")
-
-        projectDir.createSettingsFile()
-        projectDir.createBuildScriptFile()
-        projectDir.createDependenciesFile()
-        projectDir.createConfigFile()
-
-        assertThat(projectDir.configFile.readText(UTF_8))
-            .describedAs("Config file should contains expectedStrings ; $configListOfStringContained")
-            .contains(configListOfStringContained)
-        info("gradle and $CONFIG_FILE files successfully created.")
-
-        assertThat(projectDir.resolve(LIBS_FILE).readText(UTF_8))
-            .describedAs("libsVersionsTomlFile should contains the given list of strings")
-            .contains(tomlListOfStringContained)
-        info("gradle and $LIBS_FILE files successfully created.")
-
-        assertThat(projectDir.resolve(BUILD_FILE).readText(UTF_8))
-            .describedAs("buildFile should contains the given list of strings")
-            .contains(buildScriptListOfStringContained)
-        info("gradle and $BUILD_FILE files successfully created.")
-
-        assertThat(projectDir.resolve(SETTINGS_FILE).readText(UTF_8))
-            .describedAs("settingsFile should contains the given list of strings")
-            .contains(settingsListOfStringContained.toMutableList().apply { add("bakery-test") })
-
-        info("gradle and $SETTINGS_FILE files successfully created.")
     }
 
     @Suppress("DANGEROUS_CHARACTERS", "FunctionName")
