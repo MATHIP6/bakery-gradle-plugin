@@ -9,6 +9,7 @@ import com.cheroliv.bakery.FuncTestsConstants.LIBS_VERSIONS_TOML_FILE_PATH
 import com.cheroliv.bakery.FuncTestsConstants.SETTINGS_FILE_PATH
 import com.cheroliv.bakery.FuncTestsConstants.DEPS
 import com.cheroliv.bakery.FuncTestsConstants.GRADLE_BUILD_CONTENT
+import com.cheroliv.bakery.FuncTestsConstants.SETTINGS_GRADLE_CONTENT
 import org.assertj.core.api.Assertions.assertThat
 import org.slf4j.Logger
 import java.io.File
@@ -30,6 +31,8 @@ fun File.createBuildScriptFile() {
     }
 }
 
+
+
 fun File.createSettingsFile() {
     resolve("settings.gradle.kts").run {
         assertThat(exists())
@@ -38,15 +41,7 @@ fun File.createSettingsFile() {
         assertThat(createNewFile())
             .describedAs("setting.gradle.kts should be created.")
             .isTrue
-        writeText(
-            """
-            pluginManagement {
-                repositories { gradlePluginPortal() }
-            }
-
-            rootProject.name = "bakery-test"
-        """, UTF_8
-        )
+        writeText(SETTINGS_GRADLE_CONTENT, UTF_8)
         assertThat(exists())
             .describedAs("settings.gradle.kts should now exists.")
             .isTrue
@@ -258,6 +253,30 @@ object FuncTestsConstants {
     val BUILD_FILE_PATH = "${PATH_GAP}$BUILD_FILE"
     val SETTINGS_FILE_PATH = "${PATH_GAP}$SETTINGS_FILE"
     val LIBS_VERSIONS_TOML_FILE_PATH = "${PATH_GAP}$GRADLE_DIR${separator}$LIBS_VERSIONS_TOML_FILE"
+    const val GRADLE_BUILD_CONTENT = """
+plugins { alias(libs.plugins.bakery) }
+
+bakery { configPath = file("site.yml").absolutePath }
+            """
+    const val SETTINGS_GRADLE_CONTENT = """
+            pluginManagement {
+                repositories { gradlePluginPortal() }
+            }
+
+            rootProject.name = "bakery-test"
+        """
+    const val DEPS = """
+            [versions]
+            bakery = "0.0.8"
+     
+            [libraries]
+
+            [plugins]
+            bakery = { id = "com.cheroliv.bakery", version.ref = "bakery" }
+
+            [bundles]
+        """
+
     val buildScriptListOfStringContained = listOf(
         """alias(libs.plugins.bakery)""".trimIndent(),
         """bakery { configPath = file("$CONFIG_FILE").absolutePath }""".trimIndent(),
@@ -292,23 +311,6 @@ object FuncTestsConstants {
         "public.handle_contact_form", "p_name",
         "p_email", "p_subject", "p_message",
     )
-    const val GRADLE_BUILD_CONTENT = """
-plugins { alias(libs.plugins.bakery) }
-
-bakery { configPath = file("site.yml").absolutePath }
-            """
-
-    const val DEPS = """
-            [versions]
-            bakery = "0.0.8"
-     
-            [libraries]
-
-            [plugins]
-            bakery = { id = "com.cheroliv.bakery", version.ref = "bakery" }
-
-            [bundles]
-        """
     const val JBAKE_TASK_SEQUENCE = """
 Detailed task information for bake
 
