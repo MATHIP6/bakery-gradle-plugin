@@ -317,7 +317,7 @@ object FuncTestsConstants {
     )
    const val DEPS = """
             [versions]
-            bakery = "0.0.6"
+            bakery = "0.0.8"
             ktor = "3.3.0"
             commons-io = "2.13.0"
             commons-configuration = "1.10"
