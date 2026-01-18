@@ -31,8 +31,6 @@ fun File.createBuildScriptFile() {
     }
 }
 
-
-
 fun File.createSettingsFile() {
     resolve("settings.gradle.kts").run {
         assertThat(exists())
@@ -66,6 +64,102 @@ fun File.createConfigFile() {
     val configFile = File("").absoluteFile.parentFile?.parentFile?.resolve(CONFIG_FILE)
     configFile?.copyTo(resolve(CONFIG_FILE), true)
 }
+
+object FuncTestsConstants {
+    const val BAKERY_GROUP = "bakery"
+    const val BAKE_TASK = "bake"
+    const val CNAME = "CNAME"
+    const val CONFIG_FILE = "site.yml"
+    const val GRADLE_PROPERTIES_FILE = "site.yml"
+    const val BUILD_FILE = "build.gradle.kts"
+    const val SETTINGS_FILE = "settings.gradle.kts"
+    const val GRADLE_DIR = "gradle"
+    const val LIBS_VERSIONS_TOML_FILE = "libs.versions.toml"
+    val LIBS_FILE = "$GRADLE_DIR$separator$LIBS_VERSIONS_TOML_FILE"
+    val PATH_GAP = "..$separator..$separator"
+    val CONFIG_PATH = "${PATH_GAP}$CONFIG_FILE"
+    val BUILD_FILE_PATH = "${PATH_GAP}$BUILD_FILE"
+    val SETTINGS_FILE_PATH = "${PATH_GAP}$SETTINGS_FILE"
+    val LIBS_VERSIONS_TOML_FILE_PATH = "${PATH_GAP}$GRADLE_DIR${separator}$LIBS_VERSIONS_TOML_FILE"
+    const val GRADLE_BUILD_CONTENT = """
+plugins { alias(libs.plugins.bakery) }
+
+bakery { configPath = file("site.yml").absolutePath }
+            """
+    const val SETTINGS_GRADLE_CONTENT = """
+            pluginManagement {
+                repositories { gradlePluginPortal() }
+            }
+
+            rootProject.name = "bakery-test"
+        """
+    const val DEPS = """
+            [versions]
+            bakery = "0.0.8"
+     
+            [libraries]
+
+            [plugins]
+            bakery = { id = "com.cheroliv.bakery", version.ref = "bakery" }
+
+            [bundles]
+        """
+
+    val buildScriptListOfStringContained = listOf(
+        """alias(libs.plugins.bakery)""".trimIndent(),
+        """bakery { configPath = file("$CONFIG_FILE").absolutePath }""".trimIndent(),
+    )
+    val settingsListOfStringContained = listOf(
+        "pluginManagement", "repositories",
+         "gradlePluginPortal()",
+        "rootProject.name", "bakery-test"
+    )
+    val tomlListOfStringContained = listOf(
+        "[versions]",
+        "[libraries]",
+        "[plugins]",
+        "[bundles]",
+    )
+    val configListOfStringContained = listOf(
+        "bake:", "srcPath:", "destDirPath:",
+        "cname:", "pushPage:", "from:", "to:",
+        "repo:", "name:", "repository:",
+        "credentials:", "username:",
+        "password:", "branch:", "message:",
+        "pushMaquette:", "supabase:",
+        "project:", "url:", "publicKey:",
+        "schema:", "type:", "contacts:",
+        "name:", "public.contacts",
+        "columns:", "uuid", "text", "id",
+        "created_at", "name", "email",
+        "telephone", "rlsEnabled: true",
+        "messages:", "public.messages", "rpc:",
+        "name:", "params:", "timestamptz",
+        "contact_id", "subject", "message",
+        "public.handle_contact_form", "p_name",
+        "p_email", "p_subject", "p_message",
+    )
+    const val JBAKE_TASK_SEQUENCE = """
+Detailed task information for bake
+
+Path
+     :bake
+
+Type
+     JBakeTask (org.jbake.gradle.JBakeTask)
+
+Options
+     --rerun     Causes the task to be re-run even if up-to-date.
+
+Description
+     Bake a jbake project
+
+Group
+     Documentation"""
+
+
+}
+
 fun Logger.loadConfiguration(
     projectDir: File,
     gradleDir: File,
@@ -234,100 +328,5 @@ fun Logger.loadConfiguration(
     assertThat(libsVersionsTomlFile.readText(UTF_8))
         .describedAs("toml file should contains dependencies")
         .contains(tomlListOfStringContained)
-
-}
-
-object FuncTestsConstants {
-    const val BAKERY_GROUP = "bakery"
-    const val BAKE_TASK = "bake"
-    const val CNAME = "CNAME"
-    const val CONFIG_FILE = "site.yml"
-    const val GRADLE_PROPERTIES_FILE = "site.yml"
-    const val BUILD_FILE = "build.gradle.kts"
-    const val SETTINGS_FILE = "settings.gradle.kts"
-    const val GRADLE_DIR = "gradle"
-    const val LIBS_VERSIONS_TOML_FILE = "libs.versions.toml"
-    val LIBS_FILE = "$GRADLE_DIR$separator$LIBS_VERSIONS_TOML_FILE"
-    val PATH_GAP = "..$separator..$separator"
-    val CONFIG_PATH = "${PATH_GAP}$CONFIG_FILE"
-    val BUILD_FILE_PATH = "${PATH_GAP}$BUILD_FILE"
-    val SETTINGS_FILE_PATH = "${PATH_GAP}$SETTINGS_FILE"
-    val LIBS_VERSIONS_TOML_FILE_PATH = "${PATH_GAP}$GRADLE_DIR${separator}$LIBS_VERSIONS_TOML_FILE"
-    const val GRADLE_BUILD_CONTENT = """
-plugins { alias(libs.plugins.bakery) }
-
-bakery { configPath = file("site.yml").absolutePath }
-            """
-    const val SETTINGS_GRADLE_CONTENT = """
-            pluginManagement {
-                repositories { gradlePluginPortal() }
-            }
-
-            rootProject.name = "bakery-test"
-        """
-    const val DEPS = """
-            [versions]
-            bakery = "0.0.8"
-     
-            [libraries]
-
-            [plugins]
-            bakery = { id = "com.cheroliv.bakery", version.ref = "bakery" }
-
-            [bundles]
-        """
-
-    val buildScriptListOfStringContained = listOf(
-        """alias(libs.plugins.bakery)""".trimIndent(),
-        """bakery { configPath = file("$CONFIG_FILE").absolutePath }""".trimIndent(),
-    )
-    val settingsListOfStringContained = listOf(
-        "pluginManagement", "repositories",
-         "gradlePluginPortal()",
-        "rootProject.name", "bakery-test"
-    )
-    val tomlListOfStringContained = listOf(
-        "[versions]",
-        "[libraries]",
-        "[plugins]",
-        "[bundles]",
-    )
-    val configListOfStringContained = listOf(
-        "bake:", "srcPath:", "destDirPath:",
-        "cname:", "pushPage:", "from:", "to:",
-        "repo:", "name:", "repository:",
-        "credentials:", "username:",
-        "password:", "branch:", "message:",
-        "pushMaquette:", "supabase:",
-        "project:", "url:", "publicKey:",
-        "schema:", "type:", "contacts:",
-        "name:", "public.contacts",
-        "columns:", "uuid", "text", "id",
-        "created_at", "name", "email",
-        "telephone", "rlsEnabled: true",
-        "messages:", "public.messages", "rpc:",
-        "name:", "params:", "timestamptz",
-        "contact_id", "subject", "message",
-        "public.handle_contact_form", "p_name",
-        "p_email", "p_subject", "p_message",
-    )
-    const val JBAKE_TASK_SEQUENCE = """
-Detailed task information for bake
-
-Path
-     :bake
-
-Type
-     JBakeTask (org.jbake.gradle.JBakeTask)
-
-Options
-     --rerun     Causes the task to be re-run even if up-to-date.
-
-Description
-     Bake a jbake project
-
-Group
-     Documentation"""
-
 
 }
