@@ -4,7 +4,7 @@ package com.cheroliv.bakery.scenarios
 import com.cheroliv.bakery.createConfigFile
 import kotlinx.coroutines.*
 import org.gradle.testkit.runner.BuildResult
-import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.GradleRunner.create
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -32,7 +32,7 @@ class TestWorld {
 
         return scope.async {
             try {
-                GradleRunner.create()
+                create()
                     .withProjectDir(projectDir!!)
                     .withArguments(tasks.toList() + "--stacktrace")
                     .withPluginClasspath()
@@ -48,11 +48,9 @@ class TestWorld {
     /**
      * Exécute une tâche Gradle de manière synchrone
      */
-    suspend fun executeGradle(vararg tasks: String): BuildResult {
-        return executeGradleAsync(*tasks).await().also {
-            buildResult = it
-        }
-    }
+    suspend fun executeGradle(vararg tasks: String): BuildResult = executeGradleAsync(*tasks)
+        .await()
+        .also { buildResult = it }
 
     /**
      * Exécute une action avec un timeout
