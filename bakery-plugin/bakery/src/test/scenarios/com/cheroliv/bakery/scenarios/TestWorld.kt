@@ -3,6 +3,7 @@ package com.cheroliv.bakery.scenarios
 
 import com.cheroliv.bakery.createConfigFile
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Default
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner.create
 import org.slf4j.Logger
@@ -13,7 +14,7 @@ class TestWorld {
     val log: Logger = getLogger(TestWorld::class.java)
 
     // Scope de coroutines pour le scénario
-    val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    val scope = CoroutineScope(Default + SupervisorJob())
 
     // État partagé entre les steps
     var projectDir: File? = null
