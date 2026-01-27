@@ -2,6 +2,7 @@ package com.cheroliv.bakery.scenarios
 
 import io.cucumber.java.en.And
 import org.assertj.core.api.Assertions.assertThat
+import kotlin.test.assertTrue
 import kotlin.text.Charsets.UTF_8
 
 class InitSiteSteps(private val world: TestWorld) {
@@ -23,10 +24,20 @@ class InitSiteSteps(private val world: TestWorld) {
     fun checkSiteConfigFileDoesNotExists(configFileName: String) {
         configFileName
             .run(world.projectDir!!::resolve)
-            .apply { if (exists()) delete() }
+            .apply { if (exists()) assertTrue(delete()) }
             .run(::assertThat)
             .describedAs("Project directory should not have a site configuration file.")
             .doesNotExist()
+    }
+
+    @And("I add the gradle settings file with gradle portal dependencies repository")
+    fun checkRepositoryManagementInSettingsGradleFile(){
+        "settings.gradle.kts"
+            .run(world.projectDir!!::resolve)
+            .readText(UTF_8)
+            .run(::assertThat)
+            .describedAs("The gradle settings file should contains gradlePortal repository")
+            .contains("pluginManagement.repositories.gradlePluginPortal()")
     }
 
 //    @When("I am executing the task {string}")

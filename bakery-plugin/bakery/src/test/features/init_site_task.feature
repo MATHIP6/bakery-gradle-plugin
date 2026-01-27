@@ -11,8 +11,7 @@ Feature: Bakery plugin tests
     Given a new Bakery project
     And I add a buildScript file with 'site.yml' as the config path in the dsl
     And the gradle project does not have 'site.yml' as site configuration file
-#    And I add toml dependencies configuration file
-#    And I add the gradle settings file with gradle portal dependencies repository
+    And I add the gradle settings file with gradle portal dependencies repository
 #    And the gradle project does not have site template folder or maquette folder
 #    When I am executing the task 'initSite'
 #    Then the gradle project folder should have a 'site.yml' file
