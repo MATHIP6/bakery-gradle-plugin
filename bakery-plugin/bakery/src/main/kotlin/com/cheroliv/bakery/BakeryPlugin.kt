@@ -60,34 +60,36 @@ class BakeryPlugin : Plugin<Project> {
                     publishSiteTask.run {
                         group = BAKERY_GROUP
                         description = "Initialise site and maquette folders."
+                        val configFile = project.layout.projectDirectory.asFile
+
+                            .resolve("site.yml")
+                            .apply { createNewFile() }
+                            .also {
+                                "create config file."
+                                    .apply(::println)
+                                    .let(project.logger::info)
+                            }
+                        SiteConfiguration(
+                            bake = BakeConfiguration(
+                                srcPath = "site",
+                                destDirPath = "bake",
+                                cname = ""
+                            )
+                        ).run(yamlMapper::writeValueAsString)
+                            .run(configFile::writeText)
+                            .also {
+                                "write config file."
+                                    .apply(::println)
+                                    .let(project.logger::info)
+                            }
+
+
 //                        copyResourceDirectoryFromPluginJar("site", project.projectDir, this@BakeryPlugin::class.java)
 //                        copyResourceDirectoryFromPluginJar(
 //                            "maquette",
 //                            project.projectDir,
 //                            this@BakeryPlugin::class.java
 //                        )
-//                        val configFile = project
-//                            .projectDir
-//                            .resolve("site.yml")
-//                            .apply { createNewFile() }
-//                            .also {
-//                                "create config file."
-//                                    .apply(::println)
-//                                    .let(project.logger::info)
-//                            }
-//                        SiteConfiguration(
-//                            bake = BakeConfiguration(
-//                                srcPath = "site",
-//                                destDirPath = "bake",
-//                                cname = ""
-//                            )
-//                        ).run(yamlMapper::writeValueAsString)
-//                            .run(configFile::writeText)
-//                            .also {
-//                                "write config file."
-//                                    .apply(::println)
-//                                    .let(project.logger::info)
-//                            }
                     }
                 }
             } else {
