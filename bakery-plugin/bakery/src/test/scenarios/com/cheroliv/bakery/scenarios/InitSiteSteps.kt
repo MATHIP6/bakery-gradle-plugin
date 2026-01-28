@@ -1,7 +1,6 @@
 package com.cheroliv.bakery.scenarios
 
 import com.cheroliv.bakery.BakeConfiguration
-import com.cheroliv.bakery.FileSystemManager
 import com.cheroliv.bakery.FileSystemManager.yamlMapper
 import com.cheroliv.bakery.FuncTestsConstants.BUILD_FILE
 import com.cheroliv.bakery.FuncTestsConstants.SETTINGS_FILE
@@ -82,29 +81,28 @@ class InitSiteSteps(private val world: TestWorld) {
 
             assertThat(yamlMapper.readValue<SiteConfiguration>(this))
                 .describedAs("YAML mapping should fit.")
-                .isEqualTo(SiteConfiguration(BakeConfiguration("site", "bake", "")))
+                .isEqualTo(
+                    SiteConfiguration(
+                        BakeConfiguration(
+                            "site",
+                            "bake",
+                            ""
+                        )
+                    )
+                )
         }
     }
 
-//    @Then("the gradle project folder should have a site folder who contains jbake.properties file")
-//    fun jbakePropertiesFileShouldBeCreated(jbakePropertiesFileName: String) {
-//        val ignoreDirs = setOf(".git", "build", ".gradle", ".kotlin")
-//        world.projectDir!!
-//            .toPath()
-//            .run(Files::walk)
-//            .use { stream ->
-//                stream
-//                    .filter { Files.isDirectory(it) }
-//                    .filter { !ignoreDirs.contains(it.fileName.toString()) }
-//                    .filter { it.fileName.toString().equals(jbakePropertiesFileName, ignoreCase = true) }
-//                    .findFirst()
-//                    .orElse(null)
-//                    .run(::assertThat)
-//                    .describedAs("project directory should not contain file named '$jbakePropertiesFileName'")
-//                    .exists()
-//            }
-//
-//    }
+    @Then("the gradle project folder should have a directory named {string} who contains jbake.properties file")
+    fun jbakePropertiesFileShouldBeCreated(siteDirName: String) {
+        world.projectDir!!
+            .resolve("site")
+            .resolve("jbake.properties")
+            .run(::assertThat)
+            .describedAs("the $siteDirName directory should contains jbake.properties file")
+            .exists()
+            .isFile()
+    }
 
 //
 //    @When("I am waiting for all asynchronous operations to complete")
