@@ -33,6 +33,7 @@ import kotlin.text.Charsets.UTF_8
 
 class BakeryPluginFunctionalTests {
     companion object {
+        const val VERSION = "0.0.9"
         private val log: Logger by lazy { getLogger(BakeryPluginFunctionalTests::class.java) }
 
         private fun info(message: String) = message
@@ -205,6 +206,7 @@ class BakeryPluginFunctionalTests {
         info("Do template folder exist in default path : src/jbake?")
         // Est ce que le dossier src/jbake existe?
     }
+
     @Suppress("FunctionName")
     @Test
     fun `phase 2 - help task bake command retrieves name and description successfully`() {
