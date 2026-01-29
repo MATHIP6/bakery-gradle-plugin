@@ -160,9 +160,6 @@ val cucumberTest = tasks.register<Test>("cucumberTest") {
     group = "verification"
 
     testClassesDirs = sourceSets.test.get().output.classesDirs
-//    classpath = configurations.testRuntimeClasspath.get() +
-//            sourceSets.test.get().output +
-//            functionalTest.output
 
     classpath = configurations.testRuntimeClasspath.get() +
             sourceSets.test.get().output +

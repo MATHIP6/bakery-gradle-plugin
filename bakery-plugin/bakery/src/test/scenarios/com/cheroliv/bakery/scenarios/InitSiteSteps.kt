@@ -113,4 +113,6 @@ class InitSiteSteps(private val world: TestWorld) {
             .exists()
             .isFile()
     }
+
+    val foo = listOf(".gradle", "build", ".kotlin")
 }

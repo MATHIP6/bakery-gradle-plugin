@@ -14,6 +14,7 @@ import org.jbake.gradle.JBakePlugin
 import org.jbake.gradle.JBakeTask
 import java.io.File
 import java.io.File.separator
+import kotlin.text.Charsets.UTF_8
 
 
 class BakeryPlugin : Plugin<Project> {
@@ -77,6 +78,32 @@ class BakeryPlugin : Plugin<Project> {
                                     .apply(::println)
                                     .let(project.logger::info)
                             }
+                        project.projectDir.resolve(".gitignore").run {
+                            if (!exists()) {
+                                createNewFile()
+                                writeText(".gradle\nbuild\n.kotlin\nsite.yml\n")
+                            } else if (!readText(UTF_8).contains("site.yml"))
+                                appendText("\nsite.yml\n", UTF_8)
+                        }
+                        project.projectDir.resolve(".gitattributes").run {
+                            if (!exists()){
+                                createNewFile()
+                                writeText("""
+                                    #
+                                    # https://help.github.com/articles/dealing-with-line-endings/
+                                    #
+                                    # Linux start script should use lf
+                                    /gradlew        text eol=lf
+
+                                    # These are Windows script files and should use crlf
+                                    *.bat           text eol=crlf
+
+                                    # Binary files should be left untouched
+                                    *.jar           binary
+                                """.trimIndent(), UTF_8)
+                            }
+
+                        }
                         copyResourceDirectory(site.bake.srcPath, project.projectDir, project)
                         copyResourceDirectory("maquette", project.projectDir, project)
                     }
