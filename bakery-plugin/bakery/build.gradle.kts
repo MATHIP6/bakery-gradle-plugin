@@ -42,6 +42,7 @@ dependencies {
 
 kotlin.jvmToolchain(21)
 
+
 tasks.withType<Test> {
     useJUnitPlatform()
     testLogging {
@@ -49,6 +50,16 @@ tasks.withType<Test> {
         showStandardStreams = true
     }
 }
+
+tasks.named<Test>("test") {
+    filter {
+        // Exclure les classes dans le package 'com.cheroliv.bakery.scenarios' (tests Cucumber)
+        excludeTestsMatching("com.cheroliv.bakery.scenarios.**")
+        // Exclure également les classes de functionalTest
+        excludeTestsMatching("com.cheroliv.bakery.BakeryPluginFunctionalTests")
+    }
+}
+
 
 // 1. Créer le SourceSet functionalTest
 val functionalTest: SourceSet by sourceSets.creating {
