@@ -18,10 +18,9 @@ Feature: Bakery plugin tests
     Then the gradle project folder should have a 'site.yml' file for site configuration
     Then the gradle project folder should have a directory named 'site' who contains jbake.properties file
     Then the gradle project folder should have a directory named 'maquette' who contains index.html file
-#
+
 #  Scenario: initSite task without site template or configuration site file with gradle.properties configured using 'bakery.configPath'
 #    Given a new empty folder for the project
-#    And I add a buildScript file with 'site.yml' as the config path in the dsl
 #    And I add a buildScript file without dsl to set the config path
 #    And the gradle project does not have 'site.yml'
 #    And I add toml dependencies configuration file
