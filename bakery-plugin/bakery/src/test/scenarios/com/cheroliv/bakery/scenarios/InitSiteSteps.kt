@@ -86,7 +86,6 @@ class InitSiteSteps(private val world: TestWorld) {
                         BakeConfiguration(
                             "site",
                             "bake",
-                            ""
                         )
                     )
                 )

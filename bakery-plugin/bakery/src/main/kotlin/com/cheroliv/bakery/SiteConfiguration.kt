@@ -34,7 +34,7 @@ data class SiteConfiguration(
 data class BakeConfiguration(
     val srcPath: String = "",
     val destDirPath: String = "",
-    val cname: String? = null,
+    val cname: String = "",
 )
 
 data class SupabaseContactFormConfig(

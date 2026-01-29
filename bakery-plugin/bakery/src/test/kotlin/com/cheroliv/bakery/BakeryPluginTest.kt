@@ -467,7 +467,7 @@ class BakeryPluginTest {
             project = ProjectBuilder.builder().withProjectDir(tempDir).build()
         }
 
-        private fun createFakeSiteConfiguration(cname: String?) = SiteConfiguration(
+        private fun createFakeSiteConfiguration(cname: String="") = SiteConfiguration(
             bake = BakeConfiguration(srcPath = "site", destDirPath = "bake", cname = cname),
             pushPage = GitPushConfiguration(
                 from = "", to = "", repo = RepositoryConfiguration(
@@ -502,7 +502,7 @@ class BakeryPluginTest {
         @Test
         fun `createCnameFile should do nothing if cname is null`() {
             // Given
-            val siteConfiguration = createFakeSiteConfiguration(null)
+            val siteConfiguration = createFakeSiteConfiguration()
             project.layout.buildDirectory.get().asFile.mkdirs()
             val cnameFile = project.layout.buildDirectory.file(
                 "${siteConfiguration.bake.destDirPath}/CNAME"

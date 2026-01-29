@@ -221,7 +221,7 @@ object FileSystemManager {
         project.logger.error("Failed to read site configuration from ${configFile.absolutePath}", e)
         // Return a default/empty configuration to avoid build failure
         SiteConfiguration(
-            BakeConfiguration(srcPath = "", destDirPath = "", cname = null),
+            BakeConfiguration(srcPath = "", destDirPath = "", cname = ""),
             pushPage = GitPushConfiguration(
                 from = "",
                 to = "",
